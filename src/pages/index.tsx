@@ -78,50 +78,127 @@
 //     </div>
 //   );
 // }
+// import { useState } from "react";
+
+// export default function Home() {
+//   const [task, setTask] = useState("");
+//   const [tasks, setTasks] = useState<string[]>([]);
+
+//   const addTask = () => {
+//     if (!task) return;
+//     setTasks([...tasks, task]);
+//     setTask("");
+//   };
+
+//   const deleteTask = (index: number) => {
+//     const updated = tasks.filter((_, i) => i !== index);
+//     setTasks(updated);
+//   };
+
+//   return (
+//     <div className="p-10">
+//       <h1 className="text-3xl font-bold mb-4">Task Manager</h1>
+
+//       <div className="mb-4">
+//         <input
+//           className="border p-2 mr-2"
+//           value={task}
+//           onChange={(e) => setTask(e.target.value)}
+//           placeholder="Enter task"
+//         />
+
+//         <button
+//           className="bg-blue-500 text-white px-4 py-2"
+//           onClick={addTask}
+//         >
+//           Add
+//         </button>
+//       </div>
+
+//       <ul>
+//         {tasks.map((t, i) => (
+//           <li key={i} className="mb-2 flex justify-between">
+//             {t}
+//             <button
+//               className="text-red-500"
+//               onClick={() => deleteTask(i)}
+//             >
+//               Delete
+//             </button>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
 import { useState } from "react";
+import { api } from "~/utils/api";
 
 export default function Home() {
   const [task, setTask] = useState("");
-  const [tasks, setTasks] = useState<string[]>([]);
+
+  // Fetch tasks
+  const { data: tasks, isLoading, refetch } = api.task.getAll.useQuery();
+
+  // Create task
+  const createTask = api.task.create.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  //  Delete task
+  const deleteTask = api.task.delete.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   const addTask = () => {
-    if (!task) return;
-    setTasks([...tasks, task]);
+    if (!task.trim()) return;
+    createTask.mutate({ title: task });
     setTask("");
   };
 
-  const deleteTask = (index: number) => {
-    const updated = tasks.filter((_, i) => i !== index);
-    setTasks(updated);
-  };
-
   return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-4">Task Manager</h1>
+    <div className="p-10 max-w-xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Task Manager 🚀
+      </h1>
 
-      <div className="mb-4">
+      {/* Input */}
+      <div className="mb-6 flex gap-2">
         <input
-          className="border p-2 mr-2"
+          className="border p-2 flex-1 rounded"
           value={task}
           onChange={(e) => setTask(e.target.value)}
           placeholder="Enter task"
         />
 
         <button
-          className="bg-blue-500 text-white px-4 py-2"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={addTask}
         >
           Add
         </button>
       </div>
 
-      <ul>
-        {tasks.map((t, i) => (
-          <li key={i} className="mb-2 flex justify-between">
-            {t}
+      {/* Loading */}
+      {isLoading && <p className="text-center">Loading tasks...</p>}
+
+      {/* Empty state */}
+      {!isLoading && tasks?.length === 0 && (
+        <p className="text-center text-gray-500">No tasks yet</p>
+      )}
+
+      {/* Task list */}
+      <ul className="space-y-2">
+        {tasks?.map((t) => (
+          <li
+            key={t.id}
+            className="flex justify-between items-center border p-3 rounded shadow-sm"
+          >
+            <span>{t.title}</span>
+
             <button
-              className="text-red-500"
-              onClick={() => deleteTask(i)}
+              className="text-red-500 hover:text-red-700"
+              onClick={() => deleteTask.mutate({ id: t.id })}
             >
               Delete
             </button>

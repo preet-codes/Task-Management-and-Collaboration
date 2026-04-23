@@ -64,6 +64,10 @@ model User {
     sessions      Session[]
     posts         Post[]
 }
+model Task {
+  id     String @id @default(uuid())
+  title  String
+}
 
 model VerificationToken {
     identifier String
