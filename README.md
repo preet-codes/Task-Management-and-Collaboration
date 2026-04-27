@@ -227,6 +227,6 @@ Returns:
 * Lambda auto-scales per request
 
 
-# Author
+# Author - 
 
 **Prateek Setia**
