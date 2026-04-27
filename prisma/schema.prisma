@@ -7,38 +7,22 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     url      = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
     userId                   String
     type                     String
     provider                 String
     providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
+    refresh_token            String?
+    access_token             String?
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.Text
+    id_token                 String?
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     refresh_token_expires_in Int?
@@ -55,14 +39,26 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
+    password      String?
+    bio           String?
+    title         String?
+    timezone      String     @default("Asia/Kolkata")
+    emailAlerts   Boolean    @default(true)
+    createdAt     DateTime   @default(now())
+    updatedAt     DateTime   @updatedAt
+
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+    ownedProjects Project[]  @relation("ProjectOwner")
+    memberships   ProjectMember[]
+    ownedTasks    Task[]     @relation("TaskOwner")
+    assignedTasks Task[]     @relation("TaskAssignee")
+    activities    Activity[]
 }
 
 model VerificationToken {
@@ -71,4 +67,104 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Project {
+    id          String          @id @default(cuid())
+    name        String
+    description String?
+    color       String          @default("#1f8a70")
+    ownerId     String
+    owner       User            @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    members     ProjectMember[]
+    tasks       Task[]
+
+    @@index([ownerId])
+}
+
+model ProjectMember {
+    id        String     @id @default(cuid())
+    projectId String
+    userId    String
+    role      MemberRole @default(MEMBER)
+    createdAt DateTime   @default(now())
+
+    project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([projectId, userId])
+    @@index([userId])
+}
+
+model Task {
+    id          String       @id @default(cuid())
+    title       String
+    description String?
+    status      TaskStatus   @default(TODO)
+    priority    TaskPriority @default(MEDIUM)
+    deadline    DateTime?
+    tags        String[]
+    ownerId     String
+    assigneeId  String?
+    projectId   String?
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+
+    owner       User         @relation("TaskOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+    assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+    project     Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+    activities  Activity[]
+
+    @@index([ownerId])
+    @@index([assigneeId])
+    @@index([projectId])
+    @@index([status, priority])
+}
+
+model Activity {
+    id        String       @id @default(cuid())
+    type      ActivityType
+    message   String
+    metadata  Json?
+    userId    String
+    taskId    String?
+    createdAt DateTime     @default(now())
+
+    user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    task      Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([taskId])
+    @@index([createdAt])
+}
+
+enum TaskStatus {
+    TODO
+    IN_PROGRESS
+    DONE
+}
+
+enum TaskPriority {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+enum MemberRole {
+    OWNER
+    ADMIN
+    MEMBER
+}
+
+enum ActivityType {
+    TASK_CREATED
+    TASK_UPDATED
+    TASK_STATUS_CHANGED
+    TASK_COMPLETED
+    TASK_DELETED
+    PROJECT_CREATED
+    PROFILE_UPDATED
 }

@@ -1,29 +1,145 @@
-# Create T3 App
+# TaskFlow - Task Management and Collaboration Tool
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A full-stack task management app built with the T3 stack and extended for your assignment requirements.
 
-## What's next? How do I make an app with this?
+## Stack
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- Frontend: Next.js (Pages Router), TypeScript, Tailwind CSS
+- API layer: tRPC
+- Auth: NextAuth.js (Credentials - Email/Password)
+- ORM: Prisma
+- Database: Supabase PostgreSQL
+- Serverless backend infra: SST (AWS Lambda + API Gateway scaffold)
+- Testing: Vitest
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Features Implemented
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+1. Task Management Interface
+- Create tasks with title, description, priority, project linkage
+- List tasks with status and priority
+- Update task status (TODO, IN_PROGRESS, DONE)
+- Delete tasks
+- Activity log entries for create/update/status/delete
 
-## Learn More
+2. User Profile and Preferences
+- Profile page with name, title, bio
+- Preferences: timezone and email alerts toggle
+- Password change flow
+- Personal stats (assigned tasks, owned projects)
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+3. Project Management
+- Create projects with name, description, color
+- List project members and task counts
+- Ownership/membership model included in schema
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+4. Dashboard (Optional Requirement)
+- Total tasks, completed, in-progress, overdue
+- Upcoming deadlines
+- Recent activity
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+5. Testing
+- Unit tests for task utility logic
+- Run with `npm run test`
 
-## How do I deploy this?
+## Project Structure
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+```text
+src/
+	pages/
+		login.tsx
+		register.tsx
+		dashboard.tsx
+		tasks.tsx
+		projects.tsx
+		profile.tsx
+	server/
+		api/routers/
+			task.ts
+			project.ts
+			user.ts
+			dashboard.ts
+		auth.ts
+prisma/
+	schema.prisma
+functions/
+	health.ts
+stacks/
+	ApiStack.ts
+sst.config.ts
+```
+
+## Environment Variables
+
+Create `.env` from `.env.example`:
+
+```env
+DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
+NEXTAUTH_SECRET="replace-with-openssl-rand-secret"
+NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_REF].supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="replace-with-supabase-anon-key"
+```
+
+## Local Setup
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Generate Prisma client
+
+```bash
+npx prisma generate
+```
+
+3. Push schema to Supabase
+
+```bash
+npx prisma db push
+```
+
+4. Run app
+
+```bash
+npm run dev
+```
+
+Open:
+- `http://localhost:3000` (or next available port shown by Next.js)
+
+## AWS Backend (SST)
+
+SST scaffold is included with a sample health endpoint.
+
+Commands:
+
+```bash
+npm run sst:dev
+npm run sst:deploy
+```
+
+Current SST route:
+- `GET /health` -> `functions/health.handler`
+
+You can extend this stack with task/project endpoints as needed.
+
+## API Overview (tRPC)
+
+- `user.register`, `user.me`, `user.update`, `user.changePassword`
+- `project.list`, `project.create`, `project.update`
+- `task.list`, `task.get`, `task.create`, `task.update`, `task.updateStatus`, `task.delete`
+- `dashboard.stats`, `dashboard.recentActivity`, `dashboard.upcomingTasks`
+
+## Tests
+
+```bash
+npm run test
+```
+
+## Important Note
+
+If `prisma db push` fails with `P1000 Authentication failed`, your Supabase `DATABASE_URL` credentials are incorrect or expired. Use the latest Postgres connection string from:
+
+Supabase Dashboard -> Project Settings -> Database -> Connection String.
