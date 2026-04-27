@@ -1,0 +1,66 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "5c2269a41d0f3b4f32fcb87b223c6f13569ffa4656af4649028a4f5224c8d8ce": {
+      "displayName": "CustomResourceHandler/Code",
+      "source": {
+        "path": "asset.5c2269a41d0f3b4f32fcb87b223c6f13569ffa4656af4649028a4f5224c8d8ce",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "525409063673-ap-south-1-780f0d35": {
+          "bucketName": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+          "objectKey": "5c2269a41d0f3b4f32fcb87b223c6f13569ffa4656af4649028a4f5224c8d8ce.zip",
+          "region": "ap-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::525409063673:role/cdk-hnb659fds-file-publishing-role-525409063673-ap-south-1"
+        }
+      }
+    },
+    "78913575e8911098395cf75caa394cb3ad478355224d3e68b1e50df360e45283": {
+      "displayName": "TaskflowApi/Lambda_GET_--health/Lambda_GET_--health-Sourcemap",
+      "source": {
+        "path": "asset.78913575e8911098395cf75caa394cb3ad478355224d3e68b1e50df360e45283.map",
+        "packaging": "file"
+      },
+      "destinations": {
+        "525409063673-ap-south-1-04316293": {
+          "bucketName": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+          "objectKey": "78913575e8911098395cf75caa394cb3ad478355224d3e68b1e50df360e45283.map",
+          "region": "ap-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::525409063673:role/cdk-hnb659fds-file-publishing-role-525409063673-ap-south-1"
+        }
+      }
+    },
+    "d8a523659d7a531fac16cae9bbb3d0b046d470a16ecb428e24358d237bdca0fd": {
+      "displayName": "TaskflowApi/Lambda_GET_--health/Code",
+      "source": {
+        "path": "asset.d8a523659d7a531fac16cae9bbb3d0b046d470a16ecb428e24358d237bdca0fd",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "525409063673-ap-south-1-47828f6c": {
+          "bucketName": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+          "objectKey": "d8a523659d7a531fac16cae9bbb3d0b046d470a16ecb428e24358d237bdca0fd.zip",
+          "region": "ap-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::525409063673:role/cdk-hnb659fds-file-publishing-role-525409063673-ap-south-1"
+        }
+      }
+    },
+    "377840da224c9fcf169a886ac01ac05809f3a65929129125b34ae7843719a311": {
+      "displayName": "prateek-taskflow-ApiStack Template",
+      "source": {
+        "path": "prateek-taskflow-ApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "525409063673-ap-south-1-7bb2cc96": {
+          "bucketName": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+          "objectKey": "377840da224c9fcf169a886ac01ac05809f3a65929129125b34ae7843719a311.json",
+          "region": "ap-south-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::525409063673:role/cdk-hnb659fds-file-publishing-role-525409063673-ap-south-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

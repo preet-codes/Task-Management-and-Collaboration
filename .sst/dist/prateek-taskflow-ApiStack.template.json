@@ -1,0 +1,510 @@
+{
+ "Resources": {
+  "CustomResourceHandlerServiceRole41AEC181": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "sst:app",
+      "Value": "taskflow"
+     },
+     {
+      "Key": "sst:stage",
+      "Value": "prateek"
+     }
+    ]
+   }
+  },
+  "CustomResourceHandlerE8FB56BA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+     "S3Key": "5c2269a41d0f3b4f32fcb87b223c6f13569ffa4656af4649028a4f5224c8d8ce.zip"
+    },
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomResourceHandlerServiceRole41AEC181",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Tags": [
+     {
+      "Key": "sst:app",
+      "Value": "taskflow"
+     },
+     {
+      "Key": "sst:stage",
+      "Value": "prateek"
+     }
+    ],
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomResourceHandlerServiceRole41AEC181"
+   ]
+  },
+  "TaskflowApiA30EE522": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "CorsConfiguration": {
+     "AllowCredentials": false,
+     "AllowHeaders": [
+      "Content-Type",
+      "Authorization"
+     ],
+     "AllowMethods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "OPTIONS"
+     ],
+     "AllowOrigins": [
+      "*"
+     ]
+    },
+    "Name": "prateek-taskflow-TaskflowApi",
+    "ProtocolType": "HTTP",
+    "Tags": {
+     "sst:app": "taskflow",
+     "sst:stage": "prateek"
+    }
+   }
+  },
+  "TaskflowApiDefaultStageBF8E17F2": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "TaskflowApiLogGroup2505B31C",
+       "Arn"
+      ]
+     },
+     "Format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"httpMethod\":\"$context.httpMethod\",\"path\":\"$context.path\",\"routeKey\":\"$context.routeKey\",\"status\":$context.status,\"responseLatency\":$context.responseLatency,\"integrationRequestId\":\"$context.integration.requestId\",\"integrationStatus\":\"$context.integration.status\",\"integrationLatency\":\"$context.integration.latency\",\"integrationServiceStatus\":\"$context.integration.integrationStatus\",\"ip\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\"}"
+    },
+    "ApiId": {
+     "Ref": "TaskflowApiA30EE522"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default",
+    "Tags": {
+     "sst:app": "taskflow",
+     "sst:stage": "prateek"
+    }
+   }
+  },
+  "TaskflowApiLogGroup2505B31C": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/apis/prateek-taskflow-TaskflowApi-",
+       {
+        "Ref": "TaskflowApiA30EE522"
+       },
+       "/default"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "sst:app",
+      "Value": "taskflow"
+     },
+     {
+      "Key": "sst:stage",
+      "Value": "prateek"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TaskflowApiLambdaGEThealthServiceRole9A519DDF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "sst:app",
+      "Value": "taskflow"
+     },
+     {
+      "Key": "sst:stage",
+      "Value": "prateek"
+     }
+    ]
+   }
+  },
+  "TaskflowApiLambdaGEThealthServiceRoleDefaultPolicyB9C145A3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TaskflowApiLambdaGEThealthServiceRoleDefaultPolicyB9C145A3",
+    "Roles": [
+     {
+      "Ref": "TaskflowApiLambdaGEThealthServiceRole9A519DDF"
+     }
+    ]
+   }
+  },
+  "TaskflowApiLambdaGEThealth3E41B558": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+     "S3Key": "d8a523659d7a531fac16cae9bbb3d0b046d470a16ecb428e24358d237bdca0fd.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+      "SST_APP": "taskflow",
+      "SST_STAGE": "prateek",
+      "SST_SSM_PREFIX": "/sst/taskflow/prateek/"
+     }
+    },
+    "EphemeralStorage": {
+     "Size": 512
+    },
+    "Handler": "functions/health.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "TaskflowApiLambdaGEThealthServiceRole9A519DDF",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Tags": [
+     {
+      "Key": "sst:app",
+      "Value": "taskflow"
+     },
+     {
+      "Key": "sst:stage",
+      "Value": "prateek"
+     }
+    ],
+    "Timeout": 10,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "TaskflowApiLambdaGEThealthServiceRoleDefaultPolicyB9C145A3",
+    "TaskflowApiLambdaGEThealthServiceRole9A519DDF"
+   ]
+  },
+  "TaskflowApiRouteGEThealthIntegrationGEThealthA3EA9482": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TaskflowApiA30EE522"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "TaskflowApiLambdaGEThealth3E41B558",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "TaskflowApiRouteGEThealthIntegrationGEThealthPermissionCF1D22C5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TaskflowApiLambdaGEThealth3E41B558",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:ap-south-1:525409063673:",
+       {
+        "Ref": "TaskflowApiA30EE522"
+       },
+       "/*/*/health"
+      ]
+     ]
+    }
+   }
+  },
+  "TaskflowApiRouteGEThealth8515C079": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "TaskflowApiA30EE522"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "GET /health",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "TaskflowApiRouteGEThealthIntegrationGEThealthA3EA9482"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "TaskflowApiParameterurl23996947": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/sst/taskflow/prateek/Api/TaskflowApi/url",
+    "Tags": {
+     "sst:app": "taskflow",
+     "sst:stage": "prateek"
+    },
+    "Type": "String",
+    "Value": {
+     "Fn::GetAtt": [
+      "TaskflowApiA30EE522",
+      "ApiEndpoint"
+     ]
+    }
+   }
+  },
+  "SourcemapUploaderPolicy6476872E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject",
+        "s3:GetObjectTagging",
+        "s3:PutObject",
+        "s3:PutObjectTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::cdk-hnb659fds-assets-525409063673-ap-south-1/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::sstbootstrap-apsouth10677a8a5-rzgksgz9eztu/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SourcemapUploaderPolicy6476872E",
+    "Roles": [
+     {
+      "Ref": "CustomResourceHandlerServiceRole41AEC181"
+     }
+    ]
+   }
+  },
+  "SourcemapUploader": {
+   "Type": "Custom::SourcemapUploader",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomResourceHandlerE8FB56BA",
+      "Arn"
+     ]
+    },
+    "app": "taskflow",
+    "stage": "prateek",
+    "tarBucket": "sstbootstrap-apsouth10677a8a5-rzgksgz9eztu",
+    "srcBucket": "cdk-hnb659fds-assets-525409063673-ap-south-1",
+    "sourcemaps": [
+     [
+      {
+       "Fn::GetAtt": [
+        "TaskflowApiLambdaGEThealth3E41B558",
+        "Arn"
+       ]
+      },
+      "78913575e8911098395cf75caa394cb3ad478355224d3e68b1e50df360e45283.map"
+     ]
+    ]
+   },
+   "DependsOn": [
+    "SourcemapUploaderPolicy6476872E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ApiEndpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TaskflowApiA30EE522",
+     "ApiEndpoint"
+    ]
+   }
+  },
+  "SSTMetadata": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "{\"app\":\"taskflow\",\"stage\":\"prateek\",\"version\":\"2.49.8\",\"metadata\":[{\"id\":\"TaskflowApi\",\"addr\":\"c88f6237a819d09e643ea8577571d2df0b0c0537e9\",\"stack\":\"prateek-taskflow-ApiStack\",\"type\":\"Api\",\"data\":{\"graphql\":false,\"url\":\"https://",
+      {
+       "Ref": "TaskflowApiA30EE522"
+      },
+      ".execute-api.ap-south-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/\",\"httpApiId\":\"",
+      {
+       "Ref": "TaskflowApiA30EE522"
+      },
+      "\",\"routes\":[{\"type\":\"function\",\"route\":\"GET /health\",\"fn\":{\"node\":\"c803f99dfcc373377a18e1017da2c335aa8565e017\",\"stack\":\"prateek-taskflow-ApiStack\"}}]}},{\"id\":\"Lambda_GET_--health\",\"addr\":\"c803f99dfcc373377a18e1017da2c335aa8565e017\",\"stack\":\"prateek-taskflow-ApiStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+      {
+       "Fn::GetAtt": [
+        "TaskflowApiLambdaGEThealth3E41B558",
+        "Arn"
+       ]
+      },
+      "\",\"runtime\":\"nodejs22.x\",\"handler\":\"functions/health.handler\",\"localId\":\"c803f99dfcc373377a18e1017da2c335aa8565e017\",\"secrets\":[]}}]}"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

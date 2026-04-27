@@ -1,145 +1,232 @@
-# TaskFlow - Task Management and Collaboration Tool
+# TaskFlow – Task Management & Collaboration App
 
-A full-stack task management app built with the T3 stack and extended for your assignment requirements.
+A full-stack task management system built with the **T3 Stack** and extended with **AWS serverless deployment** for backend demonstration.
 
-## Stack
+# Live Application
 
-- Frontend: Next.js (Pages Router), TypeScript, Tailwind CSS
-- API layer: tRPC
-- Auth: NextAuth.js (Credentials - Email/Password)
-- ORM: Prisma
-- Database: Supabase PostgreSQL
-- Serverless backend infra: SST (AWS Lambda + API Gateway scaffold)
-- Testing: Vitest
+**Frontend (Vercel):**
+https://taskforceprateek.vercel.app/
 
-## Features Implemented
+**AWS Backend (Health Check API):**
+https://lw708thw82.execute-api.ap-south-1.amazonaws.com/health
 
-1. Task Management Interface
-- Create tasks with title, description, priority, project linkage
-- List tasks with status and priority
-- Update task status (TODO, IN_PROGRESS, DONE)
-- Delete tasks
-- Activity log entries for create/update/status/delete
+# Overview
 
-2. User Profile and Preferences
-- Profile page with name, title, bio
-- Preferences: timezone and email alerts toggle
-- Password change flow
-- Personal stats (assigned tasks, owned projects)
+TaskFlow is a collaborative task management application that enables users to:
 
-3. Project Management
-- Create projects with name, description, color
-- List project members and task counts
-- Ownership/membership model included in schema
+* Create and manage tasks
+* Assign and track task status
+* Manage user profiles
+* View dashboards and analytics
+* Collaborate across projects
 
-4. Dashboard (Optional Requirement)
-- Total tasks, completed, in-progress, overdue
-- Upcoming deadlines
-- Recent activity
+The system is designed with **modern full-stack architecture** using serverless principles.
 
-5. Testing
-- Unit tests for task utility logic
-- Run with `npm run test`
+# Tech Stack
 
-## Project Structure
+## Frontend
 
-```text
-src/
-	pages/
-		login.tsx
-		register.tsx
-		dashboard.tsx
-		tasks.tsx
-		projects.tsx
-		profile.tsx
-	server/
-		api/routers/
-			task.ts
-			project.ts
-			user.ts
-			dashboard.ts
-		auth.ts
-prisma/
-	schema.prisma
-functions/
-	health.ts
-stacks/
-	ApiStack.ts
-sst.config.ts
+* Next.js (Pages Router)
+* TypeScript
+* Tailwind CSS
+* Framer Motion (UI animations)
+
+## API Layer
+
+* tRPC (type-safe APIs)
+
+## Authentication
+
+* NextAuth.js (Credentials-based login)
+
+## Database
+
+* PostgreSQL via Supabase
+* Prisma ORM
+
+## Cloud & Deployment
+
+* Vercel (Frontend + Serverless APIs)
+* AWS (SST for Lambda + API Gateway)
+
+
+# Architecture
+
+```
+User → Vercel (Next.js + tRPC)
+             ↓
+        Prisma ORM
+             ↓
+     Supabase PostgreSQL
+
+AWS (SST)
+↓
+Lambda → API Gateway → /health
 ```
 
-## Environment Variables
 
-Create `.env` from `.env.example`:
+#  Features
 
-```env
-DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
-NEXTAUTH_SECRET="replace-with-openssl-rand-secret"
-NEXTAUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_REF].supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="replace-with-supabase-anon-key"
+## 1. Task Management
+
+* Create tasks with title, description
+* Update task status (TODO, IN_PROGRESS, DONE)
+* Delete tasks
+* Track progress visually
+
+## 2. User Authentication
+
+* Signup with email/password
+* Secure login via NextAuth
+* Session-based authentication
+
+## 3. Dashboard
+
+* View all tasks
+* Status-based UI (color-coded)
+* Real-time updates
+
+## 4. Profile Management
+
+* View user info
+* Extendable for preferences
+
+## 5. Serverless Backend (AWS)
+
+* Lambda function deployed via SST
+* API Gateway exposed endpoint
+* `/health` route for backend validation
+
+# Deployment Strategy
+
+## Why Vercel?
+
+Vercel is used for the main application because:
+
+* Native support for Next.js (SSR, API routes)
+* Automatic scaling using serverless functions
+* Zero-config deployments via GitHub
+* Built-in CDN for global performance
+
+## Why AWS (SST)?
+
+AWS SST is used to demonstrate:
+
+* Serverless backend deployment
+* Infrastructure-as-Code
+* Lambda + API Gateway integration
+
+### Implemented:
+
+* `/health` endpoint via Lambda
+* Deployed using SST stack
+
+ This satisfies the requirement of:
+
+```txt
+Deploying backend on AWS using serverless architecture
 ```
 
-## Local Setup
 
-1. Install dependencies
+##  Why Hybrid Architecture?
+
+Instead of forcing everything into AWS:
+
+* Vercel handles **Next.js efficiently**
+* AWS demonstrates **backend capability**
+
+
+# Local Setup
+
+## 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Generate Prisma client
+---
+
+## 2. Setup environment variables
+
+Create `.env` file:
+
+```env
+DATABASE_URL=your_database_url
+DIRECT_URL=your_direct_url
+NEXTAUTH_SECRET=your_secret
+NEXTAUTH_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+```
+
+## 3. Prisma setup
 
 ```bash
 npx prisma generate
-```
-
-3. Push schema to Supabase
-
-```bash
 npx prisma db push
 ```
 
-4. Run app
+---
+
+## 4. Run app
 
 ```bash
 npm run dev
 ```
 
-Open:
-- `http://localhost:3000` (or next available port shown by Next.js)
+# AWS Deployment (SST)
 
-## AWS Backend (SST)
+## Deploy backend:
 
-SST scaffold is included with a sample health endpoint.
-
-Commands:
-
-```bash
-npm run sst:dev
-npm run sst:deploy
+```
+npx sst deploy
 ```
 
-Current SST route:
-- `GET /health` -> `functions/health.handler`
+## Endpoint:
 
-You can extend this stack with task/project endpoints as needed.
-
-## API Overview (tRPC)
-
-- `user.register`, `user.me`, `user.update`, `user.changePassword`
-- `project.list`, `project.create`, `project.update`
-- `task.list`, `task.get`, `task.create`, `task.update`, `task.updateStatus`, `task.delete`
-- `dashboard.stats`, `dashboard.recentActivity`, `dashboard.upcomingTasks`
-
-## Tests
-
-```bash
-npm run test
+```txt
+GET /health
 ```
 
-## Important Note
+Returns:
 
-If `prisma db push` fails with `P1000 Authentication failed`, your Supabase `DATABASE_URL` credentials are incorrect or expired. Use the latest Postgres connection string from:
+```json
+{
+  "ok": true,
+  "service": "taskflow-api"
+}
+```
 
-Supabase Dashboard -> Project Settings -> Database -> Connection String.
+---
+
+# Security
+
+* Environment variables are NOT committed
+* Secrets handled via:
+
+  * Vercel environment variables
+  * AWS credentials (local config)
+* Passwords hashed using bcrypt
+
+---
+
+# Scalability
+
+## Vercel
+
+* Serverless auto-scaling
+* Global edge CDN
+
+## Supabase
+
+* Managed PostgreSQL
+* Connection pooling
+
+## AWS
+
+* Lambda auto-scales per request
+
+
+# Author
+
+**Prateek Setia**
